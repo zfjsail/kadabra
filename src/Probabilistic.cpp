@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <math.h>
 #include <limits.h>
 #include <iomanip>
@@ -148,6 +149,8 @@ void Probabilistic::print_status(Status *status, const bool full) const {
             cout << bet << " " << bet+compute_g(bet, status->n_pairs, delta_u_guess[status->top_k[i]]) << endl;
         }
         if (full) {
+            ofstream wf;
+            wf.open("out/bc_nodes.txt");
             double betk = status->approx_top_k[k-1] / status->n_pairs;
             double lbetk = betk - compute_f(betk, status->n_pairs, delta_l_guess[status->top_k[k-1]]);
             uint32_t pos = k+1;
@@ -157,8 +160,11 @@ void Probabilistic::print_status(Status *status, const bool full) const {
                     cout << std::setw(8) << to_string(pos++) << ") ";
                     cout << std::setw(8) << status->top_k[i] << " " << bet-compute_f(bet, status->n_pairs, delta_l_guess[status->top_k[i]]) << " ";
                     cout << bet << " " << bet+compute_g(bet, status->n_pairs, delta_u_guess[status->top_k[i]]) << endl;
+                    wf << to_string(status->top_k[i]) << " " << to_string(bet-compute_f(bet, status->n_pairs, delta_l_guess[status->top_k[i]])) << " ";
+                    wf << to_string(bet) << " " << to_string(bet+compute_g(bet, status->n_pairs, delta_u_guess[status->top_k[i]])) << endl;
                 }
             }
+            wf.close();
         } else {
             double max_upper = 0;
             for (i = k; i < status->k; i++) {
